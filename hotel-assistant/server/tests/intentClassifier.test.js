@@ -43,6 +43,10 @@ describe('Intent Classifier', () => {
     test('classifies "My name is Dhruvil. and what\'s your?" as INTRODUCTION', () => {
       expect(classifyIntent("My name is Dhruvil. and what's your?")).toBe('INTRODUCTION');
     });
+
+    test('classifies "I just arrived at the hotel" as GREETING', () => {
+      expect(classifyIntent('I just arrived at the hotel')).toBe('GREETING');
+    });
   });
 
   describe('FAQ intent', () => {

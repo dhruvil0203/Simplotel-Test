@@ -114,7 +114,13 @@ function handleGreetingIntent(message, res) {
 
   let responses;
 
-  if (/\b(?:i\s*am|i'?m)\s+from\s+([a-zA-Z\s]+)/i.test(lower)) {
+  if (/\b(?:just\s+(?:arrived|checked\s+in|reached)|(?:i|we)\s+(?:just\s+)?arrived)\b/i.test(lower)) {
+    return res.json({
+      reply: `Welcome to ${hotelData.hotel.name}! We hope you had a smooth journey. Our front desk is located on the ground floor to assist with your keys and check-in. If you need assistance with WiFi, pool access, restaurant reservations, or luggage, feel free to ask me anytime. Enjoy your stay!`,
+      type: 'greeting',
+      data: {},
+    });
+  } else if (/\b(?:i\s*am|i'?m)\s+from\s+([a-zA-Z\s]+)/i.test(lower)) {
     const match = message.trim().match(/\b(?:i\s*am|i'?m)\s+from\s+([a-zA-Z\s]+)/i);
     const place = match ? match[1].trim().replace(/\b\w/g, (c) => c.toUpperCase()) : 'your hometown';
     return res.json({

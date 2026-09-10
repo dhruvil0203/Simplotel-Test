@@ -20,7 +20,6 @@ const NON_NAME_PREFIXES = new Set([
   'coming', 'leaving', 'reaching', 'booking', 'staying'
 ]);
 
-// Greeting patterns — casual hellos, goodbyes, origins, and pleasantries
 const GREETING_PATTERNS = [
   /^\s*(hi|hello|hey|hola|howdy|hii+|heyy+|helloo+)\s*[!.,?]*\s*$/i,
   /^\s*(good\s*(morning|afternoon|evening|day|night))\s*[!.,?]*\s*$/i,
@@ -31,6 +30,7 @@ const GREETING_PATTERNS = [
   /^\s*(bye|goodbye|see\s*you|good\s*bye)\s*[!.,?]*\s*$/i,
   /^\s*(?:i\s*am|i'?m)\s+from\s+[\w\s.,!?-]+$/i,
   /^\s*greetings\s+from\s+[\w\s.,!?-]+$/i,
+  /\b(?:just\s+(?:arrived|checked\s+in|reached)|(?:i|we)\s+(?:just\s+)?arrived)\b/i,
 ];
 
 // Stop words that shouldn't be captured as part of a name

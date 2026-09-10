@@ -18,7 +18,7 @@ const WELCOME_MESSAGE = {
   id: 'welcome',
   role: 'assistant',
   content:
-    'Hello! Welcome to Grand Horizon Hotel. How can I assist you with your stay today?',
+    'Welcome to Grand Horizon Hotel! I am your virtual guest assistant. How can I assist you with your stay today? You can ask me about room availability, hotel amenities, dining options, check-in policies, and more.',
   type: 'faq',
   timestamp: Date.now(),
   data: {},
