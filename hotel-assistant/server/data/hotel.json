@@ -1,0 +1,222 @@
+{
+  "hotel": {
+    "name": "The Grand Horizon Hotel",
+    "description": "A luxurious 5-star hotel nestled in the heart of downtown, offering world-class amenities, exceptional dining, and unparalleled hospitality. Whether you're traveling for business or leisure, The Grand Horizon promises an unforgettable stay.",
+    "address": "742 Sunset Boulevard, Downtown, Metropolis, CA 90210, USA",
+    "phone": "+1 (555) 987-6543",
+    "email": "reservations@grandhorizon.com",
+    "website": "https://www.grandhorizon.com",
+    "starRating": 5
+  },
+
+  "policies": {
+    "checkInTime": "3:00 PM",
+    "checkOutTime": "11:00 AM",
+    "earlyCheckIn": "Early check-in is available from 12:00 PM onwards, subject to availability. A fee of $50 applies for check-in before 12:00 PM. Guests may request early check-in at the time of booking or by contacting the front desk.",
+    "lateCheckOut": "Late check-out until 2:00 PM is complimentary for loyalty members. For other guests, late check-out until 2:00 PM is $40, and until 4:00 PM is $75, subject to availability.",
+    "cancellation": "Free cancellation is available up to 48 hours before the scheduled check-in date. Cancellations made within 48 hours of check-in will be charged a fee equivalent to one night's stay. No-shows will be charged the full reservation amount.",
+    "smoking": "The Grand Horizon is a completely smoke-free property. Smoking (including e-cigarettes and vaping) is prohibited in all indoor areas. Designated outdoor smoking areas are available near the east garden entrance. A $250 deep-cleaning fee will be charged for smoking violations in rooms.",
+    "petPolicy": "We are a pet-friendly hotel! Dogs and cats under 30 lbs are welcome for an additional fee of $45 per night per pet (maximum 2 pets per room). A refundable pet deposit of $100 is required at check-in. Pet amenities including beds, bowls, and treats are provided. Pets must be leashed in all public areas.",
+    "agePolicy": "Guests must be 18 years or older to check in. Children of all ages are welcome when accompanied by an adult.",
+    "dressCode": "Smart casual attire is required in the Skyline Restaurant and Horizon Lounge after 6:00 PM."
+  },
+
+  "amenities": {
+    "pool": {
+      "name": "Infinity Pool & Sundeck",
+      "description": "Our stunning rooftop infinity pool offers panoramic city views. The heated pool is open year-round with a spacious sundeck, private cabanas (available for rental at $75/day), and poolside food and beverage service.",
+      "hours": "6:00 AM – 10:00 PM daily",
+      "location": "Rooftop, 25th Floor"
+    },
+    "gym": {
+      "name": "Horizon Fitness Center",
+      "description": "A state-of-the-art fitness center spanning 3,000 sq ft, featuring Technogym cardio and strength equipment, free weights, yoga mats, and Peloton bikes. Complimentary towels and water provided.",
+      "hours": "24 hours, 7 days a week",
+      "location": "Level 3",
+      "personalTrainer": "Personal training sessions available at $80/hour. Book at the front desk or through the in-room tablet."
+    },
+    "wifi": {
+      "name": "High-Speed WiFi",
+      "description": "Complimentary high-speed WiFi is available throughout the entire property, including all guest rooms, lobby, pool area, and meeting rooms. Network name: GrandHorizon-Guest. No password required — connect and accept terms.",
+      "speed": "Up to 200 Mbps"
+    },
+    "parking": {
+      "name": "Parking",
+      "description": "Secure underground parking is available for hotel guests.",
+      "selfParking": "$25 per night",
+      "valetParking": "$40 per night",
+      "electricVehicleCharging": "4 Tesla Supercharger and 6 universal Level 2 EV charging stations available on B1 level, complimentary for hotel guests.",
+      "location": "Underground, Levels B1-B3"
+    },
+    "restaurant": {
+      "name": "Skyline Restaurant & Bar",
+      "description": "Our award-winning restaurant serves contemporary American cuisine with locally sourced ingredients. The restaurant features an open kitchen, an extensive wine list with over 300 labels, and breathtaking sunset views from the terrace.",
+      "breakfast": "6:30 AM – 10:30 AM (buffet & à la carte)",
+      "lunch": "12:00 PM – 2:30 PM",
+      "dinner": "6:00 PM – 10:30 PM",
+      "bar": "4:00 PM – 12:00 AM",
+      "roomService": "Available 24 hours. A $5 delivery fee applies between 11:00 PM and 6:00 AM."
+    },
+    "spa": {
+      "name": "Serenity Spa & Wellness",
+      "description": "Indulge in our full-service spa offering massages, facials, body wraps, and hydrotherapy treatments. The spa includes a sauna, steam room, and relaxation lounge.",
+      "hours": "9:00 AM – 9:00 PM daily",
+      "popularTreatments": [
+        { "name": "Classic Swedish Massage", "duration": "60 min", "price": "$120" },
+        { "name": "Deep Tissue Massage", "duration": "60 min", "price": "$140" },
+        { "name": "Signature Horizon Facial", "duration": "75 min", "price": "$160" },
+        { "name": "Couples Retreat Package", "duration": "90 min", "price": "$280" }
+      ],
+      "location": "Level 2"
+    },
+    "businessCenter": {
+      "name": "Business Center & Meeting Rooms",
+      "description": "A fully equipped business center with printing, scanning, and fax services. Three meeting rooms seating 10-50 people are available for rental with A/V equipment, whiteboards, and catering options.",
+      "hours": "7:00 AM – 10:00 PM daily",
+      "location": "Level 1, East Wing"
+    },
+    "concierge": {
+      "name": "24-Hour Concierge",
+      "description": "Our expert concierge team is available around the clock to assist with restaurant reservations, tour bookings, transportation arrangements, and personalized recommendations."
+    },
+    "airportShuttle": {
+      "name": "Airport Shuttle Service",
+      "description": "Scheduled shuttle service to and from Metropolis International Airport (MIA). The shuttle runs every 2 hours from 5:00 AM to 11:00 PM.",
+      "price": "$30 per person one-way, $50 round-trip",
+      "privateCar": "Private car service available at $85 one-way. Book at least 24 hours in advance.",
+      "airportDistance": "Approximately 18 miles, 25-40 minutes depending on traffic."
+    }
+  },
+
+  "rooms": [
+    {
+      "type": "Standard Room",
+      "description": "A comfortable and well-appointed room perfect for solo travelers or couples. Features modern décor, a workspace, and city views.",
+      "bedType": "1 Queen Bed or 2 Twin Beds",
+      "maxAdults": 2,
+      "maxChildren": 1,
+      "size": "320 sq ft",
+      "pricePerNight": 189,
+      "amenities": ["Free WiFi", "55\" Smart TV", "Mini fridge", "In-room safe", "Coffee maker", "Iron & ironing board"],
+      "totalInventory": 80,
+      "available": true
+    },
+    {
+      "type": "Deluxe Room",
+      "description": "A spacious room with premium furnishings, a sitting area, and floor-to-ceiling windows offering stunning city or garden views.",
+      "bedType": "1 King Bed",
+      "maxAdults": 2,
+      "maxChildren": 2,
+      "size": "450 sq ft",
+      "pricePerNight": 289,
+      "amenities": ["Free WiFi", "65\" Smart TV", "Mini bar", "Nespresso machine", "Luxury bath amenities", "Plush bathrobes & slippers", "In-room safe", "Bluetooth speaker"],
+      "totalInventory": 50,
+      "available": true
+    },
+    {
+      "type": "Executive Suite",
+      "description": "An elegant suite featuring a separate living room, a marble bathroom with soaking tub, and a private balcony. Ideal for business travelers and those seeking extra luxury.",
+      "bedType": "1 King Bed",
+      "maxAdults": 2,
+      "maxChildren": 2,
+      "size": "700 sq ft",
+      "pricePerNight": 459,
+      "amenities": ["Free WiFi", "75\" Smart TV", "Full minibar (complimentary)", "Nespresso machine", "Separate living area", "Work desk with ergonomic chair", "Luxury bath amenities", "Soaking tub & rain shower", "Balcony", "Turn-down service", "Daily fruit basket"],
+      "totalInventory": 25,
+      "available": true
+    },
+    {
+      "type": "Family Room",
+      "description": "Specially designed for families, this spacious room features a divided sleeping area, kid-friendly amenities, and extra storage space. Connected rooms available upon request.",
+      "bedType": "1 King Bed + 2 Twin Beds",
+      "maxAdults": 3,
+      "maxChildren": 3,
+      "size": "580 sq ft",
+      "pricePerNight": 349,
+      "amenities": ["Free WiFi", "65\" Smart TV", "Mini fridge", "Microwave", "Kid's welcome kit", "Board games", "Baby cot available on request", "Childproofing kit", "In-room safe"],
+      "totalInventory": 30,
+      "available": true
+    },
+    {
+      "type": "Presidential Suite",
+      "description": "The pinnacle of luxury — a 1,200 sq ft suite with a master bedroom, full living and dining area, kitchenette, two bathrooms, and a wraparound terrace with panoramic views. Includes complimentary airport transfer and 24-hour butler service.",
+      "bedType": "1 King Bed (California King)",
+      "maxAdults": 3,
+      "maxChildren": 2,
+      "size": "1,200 sq ft",
+      "pricePerNight": 899,
+      "amenities": ["Free WiFi", "85\" Smart TV", "Full minibar (complimentary)", "Espresso machine", "Separate living & dining area", "Kitchenette", "Two full bathrooms", "Soaking tub, rain shower & steam shower", "Wraparound terrace", "24-hour butler service", "Complimentary airport transfer", "Daily fresh flowers & fruit", "Bose sound system"],
+      "totalInventory": 5,
+      "available": true
+    }
+  ],
+
+  "dining": {
+    "breakfast": {
+      "description": "A lavish breakfast buffet featuring international and local cuisines, a live cooking station, fresh pastries, tropical fruits, and premium coffee and juices.",
+      "price": "$35 per adult, $18 per child (ages 4-12), free for children under 4",
+      "included": "Breakfast is included with Deluxe Room, Executive Suite, and Presidential Suite bookings. Standard and Family Room guests may add breakfast for $28 per adult per night when booked in advance.",
+      "hours": "6:30 AM – 10:30 AM (weekdays), 7:00 AM – 11:00 AM (weekends)"
+    },
+    "mealPlans": {
+      "halfBoard": "Breakfast + Dinner: $75 per adult per night",
+      "fullBoard": "Breakfast + Lunch + Dinner: $110 per adult per night",
+      "note": "Meal plans can be added at booking or at the front desk. Children aged 4-12 receive 50% off meal plan rates."
+    }
+  },
+
+  "faqs": [
+    {
+      "question": "How much does parking cost?",
+      "answer": "Self-parking is $25 per night and valet parking is $40 per night. We also offer complimentary EV charging stations on level B1."
+    },
+    {
+      "question": "Is WiFi free?",
+      "answer": "Yes! Complimentary high-speed WiFi (up to 200 Mbps) is available throughout the entire property. Connect to 'GrandHorizon-Guest' — no password required."
+    },
+    {
+      "question": "Are pets allowed?",
+      "answer": "Yes, we are pet-friendly! Dogs and cats under 30 lbs are welcome for $45 per night per pet (max 2 pets). A refundable $100 pet deposit is required. Pet beds, bowls, and treats are provided."
+    },
+    {
+      "question": "Is there an airport shuttle?",
+      "answer": "Yes, we offer scheduled shuttle service to/from Metropolis International Airport every 2 hours (5 AM – 11 PM) at $30 per person one-way or $50 round-trip. Private car service is available at $85 one-way with 24-hour advance booking."
+    },
+    {
+      "question": "What is the smoking policy?",
+      "answer": "The Grand Horizon is a completely smoke-free property. Smoking and vaping are prohibited in all indoor areas. Designated outdoor smoking areas are available near the east garden entrance. A $250 cleaning fee applies for in-room violations."
+    },
+    {
+      "question": "What is the cancellation policy?",
+      "answer": "Free cancellation up to 48 hours before check-in. Cancellations within 48 hours incur a charge of one night's stay. No-shows are charged the full reservation amount."
+    },
+    {
+      "question": "Does the hotel have a pool?",
+      "answer": "Yes! Our stunning rooftop infinity pool on the 25th floor offers panoramic city views. It's heated and open year-round from 6 AM to 10 PM. Private cabanas are available for $75/day."
+    },
+    {
+      "question": "Is breakfast included?",
+      "answer": "Breakfast is included with Deluxe Room, Executive Suite, and Presidential Suite bookings. Standard and Family Room guests can add breakfast for $28 per adult per night when booked in advance, or pay $35 walk-in."
+    },
+    {
+      "question": "What are the check-in and check-out times?",
+      "answer": "Check-in is at 3:00 PM and check-out is at 11:00 AM. Early check-in from 12 PM is subject to availability ($50 fee before noon). Late check-out until 2 PM is complimentary for loyalty members, or $40 for others."
+    },
+    {
+      "question": "Do you have a gym or fitness center?",
+      "answer": "Yes, our Horizon Fitness Center on Level 3 is open 24/7. It features Technogym equipment, free weights, Peloton bikes, and yoga mats. Personal training is available at $80/hour."
+    },
+    {
+      "question": "Where is the hotel located?",
+      "answer": "The Grand Horizon Hotel is located at 742 Sunset Boulevard, Downtown, Metropolis, CA 90210, USA."
+    },
+    {
+      "question": "What is the hotel's contact information?",
+      "answer": "You can reach us by phone at +1 (555) 987-6543, by email at reservations@grandhorizon.com, or visit our website at https://www.grandhorizon.com."
+    },
+    {
+      "question": "What are the hotel timings and facility hours?",
+      "answer": "The Grand Horizon Hotel front desk is open 24/7. Standard check-in is at 3:00 PM and check-out is at 11:00 AM. Key facility hours: Rooftop Pool (6:00 AM – 10:00 PM), Fitness Center (24/7), Skyline Restaurant (Breakfast 6:30–10:30 AM, Lunch 12:00–2:30 PM, Dinner 6:00–10:30 PM, Bar 4:00 PM–12:00 AM), and Serenity Spa (9:00 AM – 9:00 PM)."
+    }
+  ]
+}
