@@ -30,7 +30,6 @@ A modern, production-ready full-stack AI virtual concierge designed for the hosp
 - [Automated Testing & Quality Assurance](#automated-testing--quality-assurance)
 - [Engineering & Architecture Principles](#engineering--architecture-principles)
 - [Production Roadmap](#production-roadmap)
-- [Documentation & Deep Dives](#documentation--deep-dives)
 - [License](#license)
 
 ---
@@ -335,15 +334,6 @@ Availability and pricing require absolute numerical and inventory accuracy. Dele
 - [ ] **Response Streaming**: Enable Server-Sent Events (SSE) for token-by-token streaming responses.
 - [ ] **Live Concierge Handoff**: WebSocket-based live agent takeover when a guest requests human assistance.
 - [ ] **Rate Limiting & Authentication**: Redis-backed token-bucket rate limiting and guest session authentication.
-
----
-
-## Documentation & Deep Dives
-
-For further architectural and UX documentation, see the [`docs/`](hotel-assistant/docs/) directory:
-- [System Architecture & Workflows](hotel-assistant/docs/architecture.md)
-- [Product, UX & Technical Design Notes](hotel-assistant/docs/product-and-ux-notes.md)
-- [Test Suite Specifications & Verification Matrix](hotel-assistant/docs/evaluation-scenarios.md)
 
 ---
 
