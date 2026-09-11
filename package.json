@@ -1,0 +1,12 @@
+{
+  "name": "grand-horizon-hotel-assistant",
+  "version": "1.0.0",
+  "description": "Full-Stack AI-Powered Hotel Guest Assistant for The Grand Horizon Hotel",
+  "scripts": {
+    "install:all": "npm --prefix hotel-assistant/server install && npm --prefix hotel-assistant/client install",
+    "dev:server": "npm --prefix hotel-assistant/server run dev",
+    "dev:client": "npm --prefix hotel-assistant/client run dev",
+    "test": "npm --prefix hotel-assistant/server test",
+    "build": "npm --prefix hotel-assistant/client run build"
+  }
+}

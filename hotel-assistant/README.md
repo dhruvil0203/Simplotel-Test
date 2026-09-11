@@ -121,33 +121,67 @@ This application provides an instant, natural conversational interface that:
 
 ### Installation & Setup
 
+#### Option A: Quick Start from Root (Recommended)
+
 1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/dhruvil0203/Simplotel-Test.git
+   cd Simplotel-Test
+   ```
+
+2. **Install all dependencies (both backend and frontend)**:
+   ```bash
+   npm run install:all
+   ```
+
+3. **Start the Backend Server (Terminal 1)**:
+   ```bash
+   npm run dev:server
+   # Server runs at http://localhost:5000
+   ```
+
+4. **Start the Frontend Server (Terminal 2)**:
+   ```bash
+   npm run dev:client
+   # Client runs at http://localhost:5173
+   ```
+
+5. **Run Automated Tests**:
+   ```bash
+   npm test
+   ```
+
+---
+
+#### Option B: Manual Directory Setup
+
+1. **Clone and navigate**:
    ```bash
    git clone https://github.com/dhruvil0203/Simplotel-Test.git
    cd Simplotel-Test/hotel-assistant
    ```
 
-2. **Install server dependencies**:
+2. **Install & run backend**:
    ```bash
    cd server
    npm install
+   npm run dev
+   # Runs at http://localhost:5000
    ```
 
-3. **Install client dependencies**:
+3. **Install & run frontend**:
    ```bash
    cd ../client
    npm install
+   npm run dev
+   # Runs at http://localhost:5173
    ```
 
-4. **Set up environment variables**:
+4. **Run tests**:
    ```bash
-   # In server/
-   cp .env.example .env
-
-   # In client/
-   cp .env.example .env
+   cd ../server
+   npm test
    ```
-   See the [Environment Variables](#environment-variables) section below for details.
 
 ### Environment Variables
 
@@ -158,32 +192,7 @@ This application provides an instant, natural conversational interface that:
 | `server/.env` | `GEMINI_API_KEY` | *(empty)* | Your Google Gemini API key (required only when `USE_LLM=true`). **Never commit this.** |
 | `client/.env` | `VITE_API_URL` | `http://localhost:5000` | Backend API base URL for the React frontend |
 
-> **Security**: `GEMINI_API_KEY` is only accessed server-side in `llmClient.js`. It is never sent to the frontend, never included in API responses, and `.env` files are excluded via `.gitignore`.
-
-### Running the Application
-
-1. **Start the Backend Server** (Port 5000):
-   ```bash
-   cd server
-   npm run dev
-   # Server runs at http://localhost:5000
-   ```
-
-2. **Start the Frontend Development Server** (Port 5173):
-   ```bash
-   cd client
-   npm run dev
-   # Client runs at http://localhost:5173
-   ```
-
-3. Open your browser and navigate to `http://localhost:5173`.
-
-### Running Tests
-
-```bash
-cd server
-npm test
-```
+> **Security**: `GEMINI_API_KEY` is only accessed server-side in `llmClient.js`. It is never sent to the frontend, never included in API responses, and `.env` files are excluded via `.gitignore`. The app runs completely out-of-the-box in offline mode with zero configuration needed.
 
 ---
 
