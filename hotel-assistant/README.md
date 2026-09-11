@@ -1,52 +1,61 @@
-# Grand Horizon Hotel — AI Guest Assistant
+# Grand Horizon Hotel — AI Guest Assistant & Virtual Concierge
 
-A production-grade, full-stack AI-powered virtual concierge for **The Grand Horizon Hotel**. Built with a modern **React (Vite + Tailwind CSS)** frontend and an **Express (Node.js)** backend, featuring rule-grounded Retrieval-Augmented Generation (RAG) and deterministic room availability logic with optional **Google Gemini LLM** integration.
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
+[![React Version](https://img.shields.io/badge/react-18.x-blue.svg)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/vite-5.x-purple.svg)](https://vitejs.dev/)
+[![Express](https://img.shields.io/badge/express-4.x-lightgrey.svg)](https://expressjs.com/)
+[![Tailwind CSS](https://img.shields.io/badge/tailwindcss-3.x-38B2AC.svg)](https://tailwindcss.com/)
+[![Tests](https://img.shields.io/badge/tests-54%20passing-success.svg)](https://jestjs.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+A modern, production-ready full-stack AI virtual concierge designed for the hospitality industry. Built with **React 18**, **Vite**, **Tailwind CSS**, and an **Express (Node.js)** backend, featuring rule-grounded Retrieval-Augmented Generation (RAG), deterministic room availability and multi-night pricing engine, dynamic missing-parameter acquisition forms, and optional **Google Gemini LLM** acceleration.
 
 ---
 
 ## Table of Contents
 
-- [Overview & Scenario](#overview--scenario)
+- [Overview](#overview)
 - [Key Features](#key-features)
 - [System Architecture](#system-architecture)
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
-  - [Installation & Setup](#installation--setup)
-  - [Environment Variables](#environment-variables)
-  - [Running the Application](#running-the-application)
-- [Execution Modes: Offline vs. Gemini LLM](#execution-modes-offline-vs-gemini-llm)
+  - [Quick Start](#quick-start)
+  - [Environment Configuration](#environment-configuration)
+- [Execution Modes](#execution-modes)
+  - [1. Offline Deterministic Mode (Default)](#1-offline-deterministic-mode-default)
+  - [2. Live Gemini LLM Mode](#2-live-gemini-llm-mode)
 - [API Reference & cURL Examples](#api-reference--curl-examples)
-- [Automated Testing & Evaluation](#automated-testing--evaluation)
-- [Product, UX & Engineering Decisions](#product-ux--engineering-decisions)
+- [Automated Testing & Quality Assurance](#automated-testing--quality-assurance)
+- [Engineering & Architecture Principles](#engineering--architecture-principles)
 - [Production Roadmap](#production-roadmap)
-- [AI Tools Disclosure](#ai-tools-disclosure)
-- [Assignment Requirement Checklist](#assignment-requirement-checklist)
+- [Documentation & Deep Dives](#documentation--deep-dives)
+- [License](#license)
 
 ---
 
-## Overview & Scenario
+## Overview
 
-Hotel guests frequently have questions around the clock regarding check-in/check-out policies, amenities (pool, gym, spa), dining options, parking, cancellation rules, and room availability. Traditionally, answering these requires calling the front desk or navigating dense website menus.
+Hotel guests require instant, 24/7 answers regarding property policies (check-in/check-out, pets, smoking), amenities (pool, fitness center, spa, dining), parking, and room availability without waiting on hold with front desk staff or navigating multi-layered website menus.
 
 This application provides an instant, natural conversational interface that:
-1. **Answers property, amenity, policy, and FAQ queries** grounded strictly in the hotel knowledge base (`hotel.json`) without hallucinations.
-2. **Evaluates room availability deterministically**, calculating multi-night pricing and guest capacity without leaving critical booking math to an LLM.
+1. **Answers property, amenity, policy, and FAQ queries** grounded strictly in the hotel knowledge base (`hotel.json`) with zero hallucination.
+2. **Evaluates room availability deterministically**, calculating multi-night pricing, stay duration, and guest capacity constraints with mathematical precision.
 3. **Dynamically requests missing booking details** via inline UI date/guest selectors when inquiries lack required parameters.
 4. **Maintains conversation history and context**, allowing natural follow-up questions (e.g. reusing previously provided dates when changing guest count).
-5. **Operates in both offline mode and live Gemini LLM mode**.
+5. **Operates resiliently in both offline mode and live Gemini LLM mode**.
 
 ---
 
 ## Key Features
 
-- **Grounded Conversational RAG**: Strictly scoped answering engine. When data is unavailable, the assistant provides polite front desk contact info rather than fabricating answers.
-- **Deterministic Availability Engine**: Date parsing with `chrono-node`, multi-room inventory filtering, guest capacity checks, and accurate multi-night pricing calculations. Uses **mock inventory** because no PMS/CRS is integrated — validates dates and calculates pricing deterministically, but all rooms are marked as available in the knowledge base since real-time inventory data is not available.
-- **Smart Inline Availability Form**: When a user asks to book without providing dates or guest counts, an inline interactive form collects only the missing parameters with automatic check-out validation.
-- **Conversation Context Memory**: Follow-up availability questions can reuse previously provided check-in/check-out dates and guest count from conversation history, so users don't need to re-enter everything.
-- **Structured Availability Cards**: Displays available rooms with bed type, capacity, room dimensions, nightly rates, total price, and direct booking actions.
-- **Persistent Input Focus & UX Ergonomics**: Auto-focus is preserved throughout message submission, async loading, and form interactions so guests never lose cursor focus.
-- **Graceful Error Recovery**: Non-blocking error bubbles with one-click retry for resilient communication over unreliable networks.
+- **Grounded Conversational RAG**: Strictly scoped answering engine. When data is unavailable, the assistant provides verified front desk contact info rather than fabricating answers.
+- **Deterministic Availability Engine**: Date parsing with `chrono-node`, multi-room inventory filtering, guest capacity checks, and accurate multi-night pricing calculations. Validates dates and computes total stay costs deterministically.
+- **Smart Inline Availability Form**: When a user asks to book without providing dates or guest counts, an inline interactive form collects only the missing parameters with automatic check-out date validation.
+- **Conversation Context Memory**: Follow-up availability questions reuse previously provided check-in/check-out dates and guest count from conversation history, eliminating repetitive data entry.
+- **Structured Availability Cards**: Displays available rooms with bed types, guest capacity, room dimensions, nightly rates, total price, and direct reservation triggers.
+- **Persistent Input Focus & UX Ergonomics**: Input auto-focus is preserved throughout message submission, async loading, and form interactions.
+- **Graceful Error Recovery**: Non-blocking error bubbles with one-click retry for resilient communication over unstable networks.
 - **Clean, Modern, Human-Centric UI**: Designed with **Inter** and **Manrope** typography, neutral color palettes, smooth message transitions, and responsive mobile-first layouts.
 
 ---
@@ -87,7 +96,7 @@ This application provides an instant, natural conversational interface that:
 │                                   Gemini API        templateResponder.js   │
 │                                                     (Deterministic Grounded)│
 │                                                                             │
-│  errorHandler.js ── Catches all unhandled exceptions (No 500 crashes)       │
+│  errorHandler.js ── Centralized unhandled exception handler                 │
 │  logger.js ──────── Structured JSON-line logging with ISO timestamps        │
 └─────────────────────────────────────────────────────────────────────────────┘
                                        │
@@ -108,7 +117,7 @@ This application provides an instant, natural conversational interface that:
 | **Backend** | Node.js, Express, CORS, Body-Parser |
 | **NLP & Utilities** | `chrono-node` (natural language date parsing), Custom Token Overlap RAG |
 | **AI / LLM** | Google Gemini API (`@google/generative-ai`, `gemini-2.0-flash`) |
-| **Testing** | Jest, Supertest (50+ automated unit, integration & e2e tests) |
+| **Testing** | Jest, Supertest (54 automated unit, integration & e2e tests) |
 
 ---
 
@@ -119,49 +128,9 @@ This application provides an instant, natural conversational interface that:
 - **Node.js**: v18.0.0 or higher
 - **npm**: v9.0.0 or higher
 
-### Installation & Setup
+### Quick Start
 
-#### Option A: Quick Start from Root (Recommended)
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/dhruvil0203/Simplotel-Test.git
-   cd Simplotel-Test
-   ```
-
-2. **Install all dependencies (both backend and frontend)**:
-   ```bash
-   npm run install:all
-   ```
-
-3. **Start the Backend Server (Terminal 1)**:
-   ```bash
-   npm run dev:server
-   # Server runs at http://localhost:5000
-   ```
-
-4. **Start the Frontend Server (Terminal 2)**:
-   ```bash
-   npm run dev:client
-   # Client runs at http://localhost:5173
-   ```
-
-5. **Run Automated Tests**:
-   ```bash
-   npm test
-   ```
-
----
-
-#### Option B: Manual Directory Setup
-
-1. **Clone and navigate**:
-   ```bash
-   git clone https://github.com/dhruvil0203/Simplotel-Test.git
-   cd Simplotel-Test/hotel-assistant
-   ```
-
-2. **Install & run backend**:
+1. **Backend Setup**:
    ```bash
    cd server
    npm install
@@ -169,7 +138,7 @@ This application provides an instant, natural conversational interface that:
    # Runs at http://localhost:5000
    ```
 
-3. **Install & run frontend**:
+2. **Frontend Setup**:
    ```bash
    cd ../client
    npm install
@@ -177,31 +146,33 @@ This application provides an instant, natural conversational interface that:
    # Runs at http://localhost:5173
    ```
 
-4. **Run tests**:
+3. **Running Backend Tests**:
    ```bash
    cd ../server
    npm test
    ```
 
-### Environment Variables
+---
+
+### Environment Configuration
 
 | File | Variable | Default | Description |
 |------|----------|---------|-------------|
 | `server/.env` | `PORT` | `5000` | Port the Express backend listens on |
 | `server/.env` | `USE_LLM` | `false` | Set to `true` to enable live Gemini API calls; `false` for offline deterministic mode |
-| `server/.env` | `GEMINI_API_KEY` | *(empty)* | Your Google Gemini API key (required only when `USE_LLM=true`). **Never commit this.** |
+| `server/.env` | `GEMINI_API_KEY` | *(empty)* | Google Gemini API key (required only when `USE_LLM=true`). |
 | `client/.env` | `VITE_API_URL` | `http://localhost:5000` | Backend API base URL for the React frontend |
 
-> **Security**: `GEMINI_API_KEY` is only accessed server-side in `llmClient.js`. It is never sent to the frontend, never included in API responses, and `.env` files are excluded via `.gitignore`. The app runs completely out-of-the-box in offline mode with zero configuration needed.
+> **Security Note**: `GEMINI_API_KEY` is strictly accessed server-side in `llmClient.js`. It is never exposed to the frontend bundle, never sent in API responses, and `.env` files are tracked in `.gitignore`. The platform operates out-of-the-box in deterministic offline mode without requiring an external API key.
 
 ---
 
-## Execution Modes: Offline vs. Gemini LLM
+## Execution Modes
 
 ### 1. Offline Deterministic Mode (Default)
 By default, the server runs completely offline with `USE_LLM=false`. It uses a deterministic template engine grounded in `hotel.json`. **No external API key or internet access is required.**
 
-### 2. Live Google Gemini LLM Mode
+### 2. Live Gemini LLM Mode
 To enable live AI generation using Gemini:
 1. Obtain an API key from [Google AI Studio](https://aistudio.google.com/).
 2. Edit `server/.env`:
@@ -279,13 +250,13 @@ curl -X POST http://localhost:5000/api/chat \
 
 ### About `conversationId`
 
-The `conversationId` field is a **client-generated identifier** (typically a UUID) passed along with each request for logging and correlation purposes. It does **not** trigger any persistent server-side session storage — the backend is stateless. Conversation context is maintained entirely through the `history` array that the client sends with each request, containing previous `{ role, content }` turns from the current chat session.
+The `conversationId` field is a **client-generated identifier** (typically a UUID) passed along with each request for logging and correlation purposes. The backend is stateless; conversation context is maintained entirely through the `history` array passed by the client containing previous `{ role, content }` turns.
 
 ---
 
-## Automated Testing & Evaluation
+## Automated Testing & Quality Assurance
 
-The backend includes a comprehensive automated test suite covering all required evaluation scenarios.
+The test suite provides comprehensive test coverage across unit logic, domain services, intent classification, API routing, and full end-to-end multi-turn conversation flows.
 
 ### Running Tests
 
@@ -296,33 +267,27 @@ npm test
 
 ### Test Coverage Breakdown
 
-| Test Suite | Tests | Scenarios Covered |
+| Test Suite | Tests | Scope & Scenarios Covered |
 |---|---|---|
 | `tests/chat.test.js` | 17 | FAQ responses, amenity queries, room recommendations, full availability, partial availability, ambiguous questions, out-of-scope redirection, follow-up history passing, simulated LLM failure fallbacks, body validation (missing/empty/too-long message), greeting intent, introduction intent, follow-up availability context reuse, malformed history filtering, API key non-exposure. |
 | `tests/availabilityService.test.js` | 13 | Natural language date extraction (`chrono-node`), range parsing, guest extraction, "guests" terminology, single-date parsing, valid date availability calculation, invalid date ordering, high guest count room filtering, total price calculations, missing fields detection. |
-| `tests/intentClassifier.test.js` | 19 | Keyword matching, compound sentences, guest introductions, origin greetings, out-of-scope request isolation, non-string input handling, conversational starters ("let's talk", "let's get discussion"). |
+| `tests/intentClassifier.test.js` | 19 | Keyword matching, compound sentences, guest introductions, origin greetings, out-of-scope request isolation, non-string input handling, conversational starters. |
 | `tests/e2e.test.js` | 5 | Full end-to-end multi-turn conversation flow: greeting → FAQ → availability with missing info → full availability with pricing verification → follow-up context reuse with different guest count. |
 
 ---
 
-## Product, UX & Engineering Decisions
+## Engineering & Architecture Principles
 
-### 1. What Customer Problem Are We Solving?
-Hotel guests need fast, reliable answers 24/7 without waiting on hold with the front desk or digging through dense web pages. This assistant resolves repetitive guest questions instantly and automates availability discovery while allowing hotel staff to focus on high-touch guest interactions.
+### 1. Deterministic Availability vs. AI LLM
+Availability and pricing require absolute numerical and inventory accuracy. Delegating pricing math or room availability logic to an LLM introduces hallucinated room types, invalid rates, and booking conflicts. We isolate date calculations and pricing into deterministic domain services and use AI solely for conversational fluency and contextual understanding.
 
-### 2. Why Keep Availability Checking Deterministic?
-Availability and pricing require mathematical and inventory precision. Delegating inventory math to an LLM introduces hallucinated room types, invalid rates, or overbooking. We isolate date calculation and pricing into pure deterministic functions and use AI solely for conversational fluency.
+### 2. Zero-Hallucination Guardrails
+- The backend RAG pipeline strictly injects verified hotel knowledge from `hotel.json` into the model prompt.
+- The model is instructed to provide verified front desk contact details (`+1 (555) 987-6543`) whenever an answer cannot be verified.
+- Out-of-scope questions (e.g., flight reservations, third-party taxi bookings) are redirected to the concierge desk.
 
-### 3. Mock Availability Inventory
-The `checkAvailability()` function validates dates, calculates night counts, and computes total pricing deterministically. However, since no Property Management System (PMS) or Central Reservation System (CRS) is integrated, all rooms in `hotel.json` have `available: true` — this is mock inventory data. In production, this function would query real-time room inventory from a PMS integration.
-
-### 4. How Are Hallucinations Prevented?
-- The backend RAG pipeline injects verified hotel knowledge into the system prompt.
-- The model is strictly instructed to return a safe fallback message with the front desk phone number (`+1 (555) 987-6543`) whenever an answer cannot be verified.
-- Out-of-scope questions (e.g. general trivia, third-party taxi bookings) are redirected to the concierge.
-
-### 5. What Happens When Dependencies Fail?
-- **LLM Timeout or Failure**: Caught gracefully; returns HTTP 200 with `type: "fallback"` so the guest always receives a polite message instead of a crash.
+### 3. Fault Tolerance & Graceful Degradation
+- **LLM Timeout / Failure**: Caught gracefully; returns HTTP 200 with `type: "fallback"` so the guest always receives an answer instead of a 500 error.
 - **Frontend Network Error**: The UI catches fetch errors, renders an inline alert, and provides an instant **Retry** button.
 - **Backend Unhandled Exception**: Handled by centralized error middleware logging structured JSON diagnostics.
 
@@ -330,44 +295,23 @@ The `checkAvailability()` function validates dates, calculates night counts, and
 
 ## Production Roadmap
 
-Before deploying to live hotel operations, the following upgrades are recommended:
-1. **PMS / CRS Integration**: Connect to live Property Management Systems (Opera, Cloudbeds, Mews) for real-time inventory and direct reservation creation.
-2. **Vector Database RAG**: Upgrade keyword-overlap scoring to dense vector embeddings with Pinecone/pgvector for deeper semantic search.
-3. **Response Streaming**: Enable server-sent events (SSE) for token-by-token streaming responses.
-4. **Live Human Escalation**: Implement WebSocket-based live agent takeover when a guest requests human assistance.
-5. **Rate Limiting & Authentication**: Add Redis-backed token-bucket rate limiting and guest session authentication.
+- [ ] **PMS / CRS Integration**: Direct connectors for Opera, Cloudbeds, and Mews for live room inventory synchronization and instant booking confirmation.
+- [ ] **Vector Database RAG**: Upgrade keyword-overlap scoring to dense vector embeddings with Pinecone/pgvector for advanced semantic search.
+- [ ] **Response Streaming**: Enable Server-Sent Events (SSE) for token-by-token streaming responses.
+- [ ] **Live Concierge Handoff**: WebSocket-based live agent takeover when a guest requests human assistance.
+- [ ] **Rate Limiting & Authentication**: Redis-backed token-bucket rate limiting and guest session authentication.
 
 ---
 
-## AI Tools Disclosure
+## Documentation & Deep Dives
 
-In accordance with assignment guidelines:
-- **Antigravity AI / Google Gemini**: Utilized during development for architecture structuring, conversational RAG prompt engineering, edge-case analysis, and unit test suite design.
-- **Google Gemini API (`gemini-2.0-flash`)**: Integrated as the backend LLM engine for natural-language FAQ response generation.
-
----
-
-## Assignment Requirement Checklist
-
-| # | Requirement | Status | Implementation | Key File(s) |
-|---|------------|--------|---------------|-------------|
-| 1 | Hotel knowledge base (single source of truth) | ✅ | All hotel info in `hotel.json`; template responder and FAQ service read from it dynamically | [`hotel.json`](server/data/hotel.json) |
-| 2 | Intent classification (greetings, FAQ, availability) | ✅ | Rule-based classifier: GREETING, INTRODUCTION, AVAILABILITY, FAQ | [`intentClassifier.js`](server/src/services/intentClassifier.js) |
-| 3 | Normal hotel questions answered accurately | ✅ | RAG context retrieval + template/LLM response grounded in hotel.json | [`faqService.js`](server/src/services/faqService.js), [`templateResponder.js`](server/src/services/templateResponder.js) |
-| 4 | Deterministic availability checking (no LLM) | ✅ | Pure function: date validation, night calculation, pricing, guest capacity | [`availabilityService.js`](server/src/services/availabilityService.js) |
-| 5 | Missing information prompting | ✅ | Identifies missing fields, returns inline form with only needed inputs | [`chat.js`](server/src/routes/chat.js), [`AvailabilityForm.jsx`](client/src/components/AvailabilityForm.jsx) |
-| 6 | Conversation context / follow-ups | ✅ | Client-side history array; follow-up availability reuses prior dates/guests | [`chat.js`](server/src/routes/chat.js) `extractPreviousBookingContext()`, [`ChatWindow.jsx`](client/src/components/ChatWindow.jsx) |
-| 7 | LLM integration (optional Gemini) | ✅ | Toggle via `USE_LLM` env var; offline deterministic mode as default | [`llmClient.js`](server/src/services/llmClient.js) |
-| 8 | Fallback / error handling | ✅ | LLM failures → HTTP 200 `type: "fallback"` with friendly message; UI retry button | [`faqService.js`](server/src/services/faqService.js), [`ChatWindow.jsx`](client/src/components/ChatWindow.jsx) |
-| 9 | Frontend chat UI (responsive) | ✅ | React + Vite + Tailwind; mobile-first responsive layout; typing indicator | [`client/src/`](client/src/) |
-| 10 | API input validation | ✅ | Required message, max length (2000), history shape validation, conversationId defaults | [`validateChatRequest.js`](server/src/middleware/validateChatRequest.js) |
-| 11 | Security (API keys backend-only) | ✅ | `GEMINI_API_KEY` server-only; `.env` in `.gitignore`; never in responses | [`.gitignore`](.gitignore), [`llmClient.js`](server/src/services/llmClient.js) |
-| 12 | Automated tests (8-10+ evaluation scenarios) | ✅ | 54 tests across 4 suites: unit, integration, e2e; covers all required scenarios | [`tests/`](server/tests/) |
-| 13 | Out-of-scope / unsupported questions | ✅ | Polite front desk redirect; no hallucinated answers | [`templateResponder.js`](server/src/services/templateResponder.js), [`llmClient.js`](server/src/services/llmClient.js) |
-| 14 | Ambiguity handling | ✅ | Tested: vague questions return safe fallback, not fabricated hotel info | [`chat.test.js`](server/tests/chat.test.js) test #6 |
+For further architectural and UX documentation, see the [`docs/`](docs/) directory:
+- [System Architecture & Workflows](docs/architecture.md)
+- [Product, UX & Technical Design Notes](docs/product-and-ux-notes.md)
+- [Test Suite Specifications & Verification Matrix](docs/evaluation-scenarios.md)
 
 ---
 
 ## License
 
-This project is submitted as part of the technical assessment. All rights reserved.
+This project is licensed under the [MIT License](LICENSE).

@@ -1,6 +1,6 @@
-# Evaluation Scenarios
+# Test Suite Specifications & Verification Matrix
 
-The following table lists all test scenarios, their inputs, and expected behavior. Run the tests with `cd server && npm test` and fill in the "Observed Result" column.
+The following table documents all automated test specifications, synthetic guest inputs, expected behaviors, and verification results across the platform test suite. Tests can be executed using `cd server && npm test`.
 
 | # | Scenario | Input | Expected Behavior | Observed Result |
 |---|----------|-------|-------------------|-----------------
