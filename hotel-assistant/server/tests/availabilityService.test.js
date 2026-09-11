@@ -1,4 +1,4 @@
-const { checkAvailability } = require('../src/services/availabilityService');
+const { checkAvailability, extractBookingDetails, getMissingFields } = require('../src/services/availabilityService');
 
 describe('Availability Service — checkAvailability', () => {
   test('returns valid rooms for a valid date range and guest count', () => {
@@ -9,7 +9,6 @@ describe('Availability Service — checkAvailability', () => {
     expect(Array.isArray(result.rooms)).toBe(true);
     expect(result.rooms.length).toBeGreaterThan(0);
 
-    // All rooms should have the expected shape
     result.rooms.forEach((room) => {
       expect(room).toHaveProperty('type');
       expect(room).toHaveProperty('pricePerNight');
@@ -19,7 +18,6 @@ describe('Availability Service — checkAvailability', () => {
       expect(room.nights).toBe(5);
     });
 
-    // At least some rooms should be available for 2 adults
     const available = result.rooms.filter((r) => r.available);
     expect(available.length).toBeGreaterThan(0);
   });
@@ -46,11 +44,9 @@ describe('Availability Service — checkAvailability', () => {
   });
 
   test('marks rooms as unavailable when guest count exceeds capacity', () => {
-    // Request for 4 adults — most rooms max out at 2-3
     const result = checkAvailability('2026-12-20', '2026-12-22', 4);
 
     expect(result.valid).toBe(true);
-    // Standard (max 2), Deluxe (max 2), Executive (max 2) should be unavailable
     const standardRoom = result.rooms.find((r) => r.type === 'Standard Room');
     expect(standardRoom.available).toBe(false);
 
@@ -59,7 +55,7 @@ describe('Availability Service — checkAvailability', () => {
   });
 
   test('calculates total price correctly based on number of nights', () => {
-    const result = checkAvailability('2026-12-20', '2026-12-23', 1); // 3 nights
+    const result = checkAvailability('2026-12-20', '2026-12-23', 1);
 
     expect(result.valid).toBe(true);
     result.rooms.forEach((room) => {
@@ -72,8 +68,46 @@ describe('Availability Service — checkAvailability', () => {
     const result = checkAvailability('2026-12-20', '2026-12-22', 0);
 
     expect(result.valid).toBe(true);
-    // All rooms should accommodate at least 1 adult
     const available = result.rooms.filter((r) => r.available);
     expect(available.length).toBeGreaterThan(0);
+  });
+});
+
+describe('Availability Service — extractBookingDetails', () => {
+  test('extracts guest count from "3 guests" terminology', () => {
+    const result = extractBookingDetails('I need a room for 3 guests');
+    expect(result.adults).toBe(3);
+  });
+
+  test('extracts guest count from "2 people" terminology', () => {
+    const result = extractBookingDetails('Room for 2 people please');
+    expect(result.adults).toBe(2);
+  });
+
+  test('returns only check-in when single date is provided', () => {
+    const result = extractBookingDetails('I want a room on January 15');
+    expect(result.checkIn).toBeDefined();
+    expect(result.checkOut).toBeNull();
+  });
+
+  test('extracts both dates from a range expression', () => {
+    const result = extractBookingDetails('from December 20 to December 25');
+    expect(result.checkIn).toBeDefined();
+    expect(result.checkOut).toBeDefined();
+  });
+});
+
+describe('Availability Service — getMissingFields', () => {
+  test('returns all fields when nothing is provided', () => {
+    const missing = getMissingFields({ checkIn: null, checkOut: null, adults: null });
+    expect(missing).toContain('checkInDate');
+    expect(missing).toContain('checkOutDate');
+    expect(missing).toContain('numberOfAdults');
+    expect(missing.length).toBe(3);
+  });
+
+  test('returns empty array when all fields provided', () => {
+    const missing = getMissingFields({ checkIn: '2026-12-20', checkOut: '2026-12-25', adults: 2 });
+    expect(missing.length).toBe(0);
   });
 });

@@ -8,7 +8,6 @@ const hotelData = require('../../data/hotel.json');
 
 const router = express.Router();
 
-// Clean, human-sounding greeting responses
 const GREETING_RESPONSES = [
   `Hello! Welcome to ${hotelData.hotel.name}. I am your guest assistant. I can help you with room availability, hotel amenities, dining options, policies, and more. How can I assist you today?`,
   `Hi there! Welcome to ${hotelData.hotel.name}. I am here to help with anything you need during your stay. What can I do for you?`,
@@ -25,7 +24,6 @@ const GOODBYE_RESPONSES = [
   `Take care! If you need anything in the future, I am always here to help.`,
 ];
 
-// Personalised introduction responses
 const INTRODUCTION_RESPONSES = [
   `Hello {name}! Nice to meet you. Welcome to ${hotelData.hotel.name}. I am your virtual guest assistant. How can I assist you today?`,
   `Hi {name}! It is great to meet you. Welcome to ${hotelData.hotel.name}. How can I help with your stay?`,
@@ -50,7 +48,7 @@ router.post('/', validateChatRequest, async (req, res, next) => {
     }
 
     if (intent === 'AVAILABILITY') {
-      return await handleAvailabilityIntent(message, res);
+      return await handleAvailabilityIntent(message, history, res);
     }
 
     const result = await handleFaqQuestion(message, history);
@@ -61,17 +59,42 @@ router.post('/', validateChatRequest, async (req, res, next) => {
   }
 });
 
-async function handleAvailabilityIntent(message, res) {
+function extractPreviousBookingContext(history) {
+  const context = { checkIn: null, checkOut: null, adults: null };
+  if (!Array.isArray(history)) return context;
+
+  for (let i = history.length - 1; i >= 0; i--) {
+    const turn = history[i];
+    if (turn.role !== 'user') continue;
+
+    const prevDetails = extractBookingDetails(turn.content);
+    if (prevDetails.checkIn && !context.checkIn) context.checkIn = prevDetails.checkIn;
+    if (prevDetails.checkOut && !context.checkOut) context.checkOut = prevDetails.checkOut;
+    if (prevDetails.adults && !context.adults) context.adults = prevDetails.adults;
+
+    if (context.checkIn && context.checkOut && context.adults) break;
+  }
+
+  return context;
+}
+
+async function handleAvailabilityIntent(message, history, res) {
   const details = extractBookingDetails(message);
+
+  const previousContext = extractPreviousBookingContext(history);
+  if (!details.checkIn && previousContext.checkIn) details.checkIn = previousContext.checkIn;
+  if (!details.checkOut && previousContext.checkOut) details.checkOut = previousContext.checkOut;
+  if (!details.adults && previousContext.adults) details.adults = previousContext.adults;
+
   const missingFields = getMissingFields(details);
 
-  logger.info('Availability details extracted', { details, missingFields });
+  logger.info('Availability details extracted', { details, missingFields, usedPreviousContext: !!(previousContext.checkIn || previousContext.checkOut || previousContext.adults) });
 
   if (missingFields.length > 0) {
     const fieldLabels = {
       checkInDate: 'check-in date',
       checkOutDate: 'check-out date',
-      numberOfAdults: 'number of adults',
+      numberOfAdults: 'number of guests',
     };
     const missingLabels = missingFields.map((f) => fieldLabels[f] || f);
 
@@ -97,15 +120,15 @@ async function handleAvailabilityIntent(message, res) {
 
   let reply;
   if (availableRooms.length > 0) {
-    reply = `Great news! I found ${availableRooms.length} room type${availableRooms.length > 1 ? 's' : ''} available for your ${nights}-night stay (${details.checkIn} to ${details.checkOut}) for ${details.adults} adult${details.adults > 1 ? 's' : ''}. Here are your options:`;
+    reply = `Great news! I found ${availableRooms.length} room type${availableRooms.length > 1 ? 's' : ''} available for your ${nights}-night stay (${details.checkIn} to ${details.checkOut}) for ${details.adults} guest${details.adults > 1 ? 's' : ''}. Here are your options:`;
   } else {
-    reply = `I'm sorry, we don't have any rooms that can accommodate ${details.adults} adult${details.adults > 1 ? 's' : ''} for those dates. Please contact our front desk for alternative arrangements.`;
+    reply = `I'm sorry, we don't have any rooms that can accommodate ${details.adults} guest${details.adults > 1 ? 's' : ''} for those dates. Please contact our front desk for alternative arrangements.`;
   }
 
   return res.json({
     reply,
     type: 'availability_result',
-    data: { rooms: result.rooms, checkIn: details.checkIn, checkOut: details.checkOut, nights, adults: details.adults },
+    data: { rooms: result.rooms, checkIn: details.checkIn, checkOut: details.checkOut, nights, guests: details.adults },
   });
 }
 

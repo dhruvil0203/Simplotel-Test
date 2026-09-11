@@ -1,4 +1,4 @@
-const { classifyIntent } = require('../src/services/intentClassifier');
+const { classifyIntent, extractName } = require('../src/services/intentClassifier');
 
 describe('Intent Classifier', () => {
   describe('AVAILABILITY intent', () => {
@@ -38,10 +38,33 @@ describe('Intent Classifier', () => {
 
     test('classifies "My name is Alex" as INTRODUCTION', () => {
       expect(classifyIntent('My name is Alex')).toBe('INTRODUCTION');
+      expect(extractName('My name is Alex')).toBe('Alex');
     });
 
     test('classifies "My name is Dhruvil. and what\'s your?" as INTRODUCTION', () => {
       expect(classifyIntent("My name is Dhruvil. and what's your?")).toBe('INTRODUCTION');
+      expect(extractName("My name is Dhruvil. and what's your?")).toBe('Dhruvil');
+    });
+
+    test('classifies "Dk here." and "Karan here." as INTRODUCTION', () => {
+      expect(classifyIntent('Dk here.')).toBe('INTRODUCTION');
+      expect(extractName('Dk here.')).toBe('Dk');
+
+      expect(classifyIntent('Karan here.')).toBe('INTRODUCTION');
+      expect(extractName('Karan here.')).toBe('Karan');
+
+      expect(classifyIntent('Alex here')).toBe('INTRODUCTION');
+      expect(extractName('Alex here')).toBe('Alex');
+
+      expect(classifyIntent('This is Sarah')).toBe('INTRODUCTION');
+      expect(extractName('This is Sarah')).toBe('Sarah');
+    });
+
+    test('classifies conversational starters like "let\'s get discussion" as GREETING', () => {
+      expect(classifyIntent("let's get discussion")).toBe('GREETING');
+      expect(classifyIntent("let's talk")).toBe('GREETING');
+      expect(classifyIntent("can we chat")).toBe('GREETING');
+      expect(classifyIntent("let's discuss")).toBe('GREETING');
     });
 
     test('classifies "I just arrived at the hotel" as GREETING', () => {

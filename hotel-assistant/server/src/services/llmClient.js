@@ -1,17 +1,6 @@
 const { generateTemplateAnswer } = require('./templateResponder');
 const logger = require('../utils/logger');
 
-/**
- * LLM client abstraction.
- *
- * If USE_LLM=true and GEMINI_API_KEY is set → calls Google Gemini.
- * Otherwise → delegates to the deterministic template responder.
- *
- * @param {string} context  - Retrieved hotel knowledge-base context
- * @param {string} question - The user's question
- * @param {Array}  history  - Conversation history [{role, content}, ...]
- * @returns {Promise<string>} The generated answer
- */
 async function generateAnswer(context, question, history = []) {
   const useLLM = process.env.USE_LLM === 'true';
   const apiKey = process.env.GEMINI_API_KEY;
@@ -24,48 +13,59 @@ async function generateAnswer(context, question, history = []) {
   return generateTemplateAnswer(context, question, history);
 }
 
-/**
- * Call Google Gemini via the @google/generative-ai SDK.
- */
 async function callGemini(context, question, history, apiKey) {
-  // Dynamic import so we don't crash if the SDK isn't installed
-  // or when USE_LLM is false
   const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-
+  const modelName = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
   const systemPrompt = buildSystemPrompt(context);
 
-  // Build the conversation history for the model
-  const contents = [];
-
-  // Add conversation history (last 6 turns max to keep context manageable)
-  const recentHistory = history.slice(-6);
-  for (const turn of recentHistory) {
-    contents.push({
-      role: turn.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: turn.content }],
-    });
-  }
-
-  // Add the current question
-  contents.push({
-    role: 'user',
-    parts: [{ text: question }],
-  });
-
-  logger.info('Calling Gemini API', { model: 'gemini-2.0-flash', questionLength: question.length });
-
-  const result = await model.generateContent({
-    contents,
-    systemInstruction: { parts: [{ text: systemPrompt }] },
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({
+    model: modelName,
+    systemInstruction: systemPrompt,
     generationConfig: {
       temperature: 0.3,
       maxOutputTokens: 512,
     },
   });
 
+  const rawContents = [];
+  const recentHistory = history.slice(-6);
+  for (const turn of recentHistory) {
+    rawContents.push({
+      role: turn.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: turn.content }],
+    });
+  }
+
+  rawContents.push({
+    role: 'user',
+    parts: [{ text: question }],
+  });
+
+  while (rawContents.length > 0 && rawContents[0].role !== 'user') {
+    rawContents.shift();
+  }
+
+  const contents = [];
+  for (const item of rawContents) {
+    if (contents.length > 0 && contents[contents.length - 1].role === item.role) {
+      contents[contents.length - 1].parts[0].text += `\n${item.parts[0].text}`;
+    } else {
+      contents.push(item);
+    }
+  }
+
+  if (contents.length === 0) {
+    contents.push({
+      role: 'user',
+      parts: [{ text: question }],
+    });
+  }
+
+  logger.info('Calling Gemini API', { model: modelName, questionLength: question.length });
+
+  const result = await model.generateContent({ contents });
   const response = result.response;
   const text = response.text();
 
@@ -73,9 +73,6 @@ async function callGemini(context, question, history, apiKey) {
   return text;
 }
 
-/**
- * Build the system prompt that restricts the model to the retrieved context.
- */
 function buildSystemPrompt(context) {
   return `You are a helpful, friendly, and professional virtual concierge for The Grand Horizon Hotel. Your role is to assist hotel guests with their questions.
 

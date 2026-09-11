@@ -1,11 +1,5 @@
 const logger = require('../utils/logger');
 
-/**
- * Central error-handling middleware.
- * Catches any unhandled errors, logs them server-side,
- * and returns a safe, user-friendly JSON response.
- */
-// eslint-disable-next-line no-unused-vars
 function errorHandler(err, req, res, _next) {
   logger.error('Unhandled error in request', {
     method: req.method,

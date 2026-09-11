@@ -1,9 +1,8 @@
 const logger = require('../utils/logger');
 
-/**
- * Validates the incoming chat request body.
- * Requires a non-empty `message` string field.
- */
+const MAX_MESSAGE_LENGTH = 2000;
+const VALID_HISTORY_ROLES = new Set(['user', 'assistant']);
+
 function validateChatRequest(req, res, next) {
   const { message } = req.body;
 
@@ -18,15 +17,34 @@ function validateChatRequest(req, res, next) {
     });
   }
 
-  // Normalise — trim whitespace
+  if (message.trim().length > MAX_MESSAGE_LENGTH) {
+    logger.warn('Validation failed: message too long', {
+      length: message.trim().length,
+    });
+    return res.status(400).json({
+      type: 'error',
+      reply: `Message is too long. Please keep it under ${MAX_MESSAGE_LENGTH} characters.`,
+      data: {},
+    });
+  }
+
   req.body.message = message.trim();
 
-  // Ensure history is an array (default to empty)
   if (!Array.isArray(req.body.history)) {
     req.body.history = [];
   }
 
-  // Ensure conversationId is a string (default to empty)
+  const validHistory = req.body.history.filter((item) => {
+    return (
+      item &&
+      typeof item === 'object' &&
+      typeof item.content === 'string' &&
+      item.content.trim().length > 0 &&
+      VALID_HISTORY_ROLES.has(item.role)
+    );
+  });
+  req.body.history = validHistory;
+
   if (typeof req.body.conversationId !== 'string') {
     req.body.conversationId = '';
   }

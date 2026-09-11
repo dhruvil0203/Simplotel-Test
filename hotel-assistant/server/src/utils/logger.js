@@ -1,8 +1,3 @@
-/**
- * Structured JSON-line logger with ISO timestamps.
- * Logs to stdout (info) and stderr (error/warn) for easy piping.
- */
-
 function formatLog(level, message, meta = {}) {
   const entry = {
     timestamp: new Date().toISOString(),

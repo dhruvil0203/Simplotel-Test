@@ -1,14 +1,12 @@
 const request = require('supertest');
 const app = require('../src/app');
 
-// Mock the llmClient so tests never make real API calls
 jest.mock('../src/services/llmClient', () => ({
   generateAnswer: jest.fn(),
 }));
 
 const { generateAnswer } = require('../src/services/llmClient');
 
-// Default mock implementation — returns a template-like answer
 beforeEach(() => {
   generateAnswer.mockReset();
   generateAnswer.mockResolvedValue(
@@ -17,9 +15,6 @@ beforeEach(() => {
 });
 
 describe('POST /api/chat', () => {
-  // ------------------------------------------------------------------
-  // 1. Normal FAQ question returns a relevant type: "faq" reply
-  // ------------------------------------------------------------------
   test('1. FAQ question returns type "faq" with a relevant reply', async () => {
     generateAnswer.mockResolvedValue(
       'Check-in time at The Grand Horizon Hotel is 3:00 PM. Early check-in is available from 12:00 PM onwards, subject to availability.'
@@ -36,9 +31,6 @@ describe('POST /api/chat', () => {
     expect(res.body.reply.length).toBeGreaterThan(0);
   });
 
-  // ------------------------------------------------------------------
-  // 2. Amenity question (pool) returns correct info
-  // ------------------------------------------------------------------
   test('2. Amenity question about pool returns pool info', async () => {
     generateAnswer.mockResolvedValue(
       'Yes! Our stunning rooftop infinity pool on the 25th floor offers panoramic city views. It\'s heated and open year-round from 6:00 AM to 10:00 PM.'
@@ -53,9 +45,6 @@ describe('POST /api/chat', () => {
     expect(res.body.reply.toLowerCase()).toMatch(/pool/);
   });
 
-  // ------------------------------------------------------------------
-  // 3. Room-recommendation question returns a sensible room suggestion
-  // ------------------------------------------------------------------
   test('3. Room-recommendation question returns room info', async () => {
     generateAnswer.mockResolvedValue(
       'For your needs, I would recommend our Deluxe Room with a King Bed, accommodating up to 2 adults at $289/night, or our Executive Suite at $459/night for a more luxurious stay.'
@@ -70,15 +59,10 @@ describe('POST /api/chat', () => {
       });
 
     expect(res.status).toBe(200);
-    // This could be classified as FAQ (room type question without dates)
-    // or availability depending on the classifier
     expect(['faq', 'availability_result', 'availability_needs_info']).toContain(res.body.type);
     expect(res.body.reply).toBeDefined();
   });
 
-  // ------------------------------------------------------------------
-  // 4. Availability request with full info returns type "availability_result"
-  // ------------------------------------------------------------------
   test('4. Full availability request returns rooms data', async () => {
     const res = await request(app)
       .post('/api/chat')
@@ -95,7 +79,6 @@ describe('POST /api/chat', () => {
     expect(Array.isArray(res.body.data.rooms)).toBe(true);
     expect(res.body.data.rooms.length).toBeGreaterThan(0);
 
-    // Each room should have required fields
     res.body.data.rooms.forEach((room) => {
       expect(room).toHaveProperty('type');
       expect(room).toHaveProperty('pricePerNight');
@@ -103,9 +86,6 @@ describe('POST /api/chat', () => {
     });
   });
 
-  // ------------------------------------------------------------------
-  // 5. Availability request missing dates returns "availability_needs_info"
-  // ------------------------------------------------------------------
   test('5. Availability request missing dates returns missingFields', async () => {
     const res = await request(app)
       .post('/api/chat')
@@ -120,15 +100,11 @@ describe('POST /api/chat', () => {
     expect(res.body.data.missingFields).toBeDefined();
     expect(Array.isArray(res.body.data.missingFields)).toBe(true);
     expect(res.body.data.missingFields.length).toBeGreaterThan(0);
-    // Should be missing at least one date field
     expect(
       res.body.data.missingFields.some((f) => f.includes('Date'))
     ).toBe(true);
   });
 
-  // ------------------------------------------------------------------
-  // 6. Ambiguous question not in knowledge base returns "fallback"
-  // ------------------------------------------------------------------
   test('6. Ambiguous out-of-knowledge question returns fallback', async () => {
     generateAnswer.mockResolvedValue(
       "I don't have that information available. Please contact our front desk at +1 (555) 987-6543 or email reservations@grandhorizon.com for further assistance."
@@ -143,14 +119,10 @@ describe('POST /api/chat', () => {
       });
 
     expect(res.status).toBe(200);
-    // The reply should not fabricate hotel-specific details
-    expect(res.body.reply).not.toMatch(/\$\d+/); // No made-up prices
-    expect(res.body.reply).not.toMatch(/room \d+/i); // No made-up room numbers
+    expect(res.body.reply).not.toMatch(/\$\d+/);
+    expect(res.body.reply).not.toMatch(/room \d+/i);
   });
 
-  // ------------------------------------------------------------------
-  // 7. Out-of-scope request returns fallback
-  // ------------------------------------------------------------------
   test('7. Out-of-scope request (book a taxi) returns fallback-style reply', async () => {
     generateAnswer.mockResolvedValue(
       "I don't have that information available. Please contact our front desk at +1 (555) 987-6543 or email reservations@grandhorizon.com for further assistance."
@@ -166,9 +138,7 @@ describe('POST /api/chat', () => {
 
     expect(res.status).toBe(200);
     expect(res.body.reply).toBeDefined();
-    // The response type should be faq or fallback (not error, not availability)
     expect(['faq', 'fallback']).toContain(res.body.type);
-    // The reply should guide the user to contact the front desk
     const replyLower = res.body.reply.toLowerCase();
     expect(
       replyLower.includes('front desk') ||
@@ -178,9 +148,6 @@ describe('POST /api/chat', () => {
     ).toBe(true);
   });
 
-  // ------------------------------------------------------------------
-  // 8. Follow-up question: history is passed to llmClient
-  // ------------------------------------------------------------------
   test('8. Follow-up question passes history to llmClient', async () => {
     generateAnswer.mockResolvedValue(
       'Yes, the pool is heated and open year-round!'
@@ -202,15 +169,11 @@ describe('POST /api/chat', () => {
     expect(res.status).toBe(200);
     expect(res.body.type).toBe('faq');
 
-    // Assert that generateAnswer was called with history included
     expect(generateAnswer).toHaveBeenCalled();
     const callArgs = generateAnswer.mock.calls[0];
-    expect(callArgs[2]).toEqual(history); // Third argument is history
+    expect(callArgs[2]).toEqual(history);
   });
 
-  // ------------------------------------------------------------------
-  // 9. Simulated LLM failure — still returns 200 with fallback
-  // ------------------------------------------------------------------
   test('9. LLM failure returns 200 with type "fallback", not 500', async () => {
     generateAnswer.mockRejectedValue(new Error('Gemini API timeout'));
 
@@ -228,9 +191,6 @@ describe('POST /api/chat', () => {
     expect(res.body.reply.length).toBeGreaterThan(0);
   });
 
-  // ------------------------------------------------------------------
-  // 10. Validation: missing message returns 400
-  // ------------------------------------------------------------------
   test('10. Missing message field returns 400 with clear error', async () => {
     const res = await request(app)
       .post('/api/chat')
@@ -248,5 +208,96 @@ describe('POST /api/chat', () => {
 
     expect(res.status).toBe(400);
     expect(res.body.type).toBe('error');
+  });
+
+  test('11. Greeting message returns type "greeting"', async () => {
+    const res = await request(app)
+      .post('/api/chat')
+      .send({ message: 'Hello!', conversationId: 'test-11', history: [] });
+
+    expect(res.status).toBe(200);
+    expect(res.body.type).toBe('greeting');
+    expect(res.body.reply).toBeDefined();
+    expect(res.body.reply.toLowerCase()).toMatch(/welcome|hello|hi/);
+  });
+
+  test('12. Introduction message returns type "introduction" with name', async () => {
+    const res = await request(app)
+      .post('/api/chat')
+      .send({ message: 'My name is Alex', conversationId: 'test-12', history: [] });
+
+    expect(res.status).toBe(200);
+    expect(res.body.type).toBe('introduction');
+    expect(res.body.data.name).toBe('Alex');
+    expect(res.body.reply.toLowerCase()).toMatch(/alex/);
+  });
+
+  test('13. Follow-up availability reuses dates from conversation history', async () => {
+    const history = [
+      { role: 'user', content: 'I want to book a room from December 20 to December 25 for 2 guests' },
+      { role: 'assistant', content: 'Great news! I found 4 room types available.' },
+    ];
+
+    const res = await request(app)
+      .post('/api/chat')
+      .send({
+        message: 'What about for 3 guests?',
+        conversationId: 'test-13',
+        history,
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body.type).toBe('availability_result');
+    expect(res.body.data.rooms).toBeDefined();
+    expect(res.body.data.checkIn).toBeDefined();
+    expect(res.body.data.checkOut).toBeDefined();
+    expect(res.body.data.guests).toBe(3);
+  });
+
+  test('14. Message exceeding 2000 characters returns 400', async () => {
+    const longMessage = 'a'.repeat(2001);
+    const res = await request(app)
+      .post('/api/chat')
+      .send({ message: longMessage, conversationId: 'test-14', history: [] });
+
+    expect(res.status).toBe(400);
+    expect(res.body.type).toBe('error');
+    expect(res.body.reply).toMatch(/too long/i);
+  });
+
+  test('15. Malformed history items are filtered, request still succeeds', async () => {
+    generateAnswer.mockResolvedValue('The pool is on the 25th floor.');
+
+    const res = await request(app)
+      .post('/api/chat')
+      .send({
+        message: 'Tell me about the pool',
+        conversationId: 'test-15',
+        history: [
+          { role: 'user', content: 'Hello' },
+          { badKey: 'no role' },
+          null,
+          { role: 'hacker', content: 'injected' },
+          { role: 'assistant', content: '' },
+        ],
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body.reply).toBeDefined();
+    const callArgs = generateAnswer.mock.calls[0];
+    expect(callArgs[2]).toEqual([{ role: 'user', content: 'Hello' }]);
+  });
+
+  test('16. No API keys or secrets in response body', async () => {
+    generateAnswer.mockResolvedValue('Welcome to the hotel!');
+
+    const res = await request(app)
+      .post('/api/chat')
+      .send({ message: 'Hello', conversationId: 'test-16', history: [] });
+
+    const bodyStr = JSON.stringify(res.body);
+    expect(bodyStr).not.toMatch(/GEMINI_API_KEY/i);
+    expect(bodyStr).not.toMatch(/api[_-]?key/i);
+    expect(bodyStr).not.toMatch(/secret/i);
   });
 });

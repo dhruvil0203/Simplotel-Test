@@ -66,7 +66,7 @@ export default function AvailabilityForm({ missingFields, initialDetails = {}, o
     const parts = [];
     if (checkIn) parts.push(`from ${checkIn}`);
     if (checkOut) parts.push(`to ${checkOut}`);
-    if (adults) parts.push(`for ${adults} adult${adults > 1 ? 's' : ''}`);
+    if (adults) parts.push(`for ${adults} guest${adults > 1 ? 's' : ''}`);
 
     const message = `I'd like to check availability ${parts.join(' ')}`;
     onSubmit(message);
@@ -119,7 +119,7 @@ export default function AvailabilityForm({ missingFields, initialDetails = {}, o
               htmlFor="availability-adults"
               className="block text-xs font-medium text-gray-700 mb-1"
             >
-              Number of Adults
+              Number of Guests
             </label>
             <input
               id="availability-adults"

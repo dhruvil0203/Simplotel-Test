@@ -37,7 +37,7 @@ export default function AvailabilityCard({ rooms, checkIn, checkOut, nights }) {
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 my-2 text-xs text-gray-600">
             <span>{room.bedType}</span>
             <span>•</span>
-            <span>Up to {room.maxAdults} adults</span>
+            <span>Up to {room.maxAdults} guests</span>
             <span>•</span>
             <span>{room.size}</span>
           </div>
